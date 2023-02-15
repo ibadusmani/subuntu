@@ -1,0 +1,51 @@
+#!/bin/bash
+
+#lb clean
+
+# ~/subuntu -- build folder
+# ~/subuntubuild  -- files location
+
+# Assign WKDIR variable the output of pwd
+
+WKDIR="$(pwd)"
+
+mkdir subuntu
+cd subuntu
+
+# Set up build environment
+
+lb config --binary-images iso-hybrid --mode debian --architectures amd64 --linux-flavours amd64 --distribution bullseye --archive-areas "main contrib non-free" --updates true --security true --cache true --apt-recommends true --debian-installer live --debian-installer-gui true --win32-loader false --iso-application subuntu --iso-preparer ibadusmani --iso-publisher ibadusmani --iso-volume subuntu
+
+# Install desktop and applications
+
+echo "adapta-kde akregator alsa-utils ark breeze breeze-icon-theme cups cups-filters curl dbus-user-session dbus-x11 dconf-cli elisa ffmpegthumbs foomatic-db foomatic-db-engine fuse3 ghostscript grub-theme-breeze gvfs-backends gvfs-bin gvfs-fuse gwenview iw k3b kate kbackup kcalc kde-baseapps kde-config-sddm kde-spectacle kget kgpg khelpcenter kolourpaint kompare konq-plugins konqueror kpat ksystemlog ktorrent kwave kwin-addons kwin-common kwin-x11 kwrite libnss-mdns libsmbclient lsb-release materia-kde muon netcat-openbsd network-manager network-manager-openconnect network-manager-openvpn okteta okular perl plymouth plymouth-label printer-driver-gutenprint pulseaudio samba-common-bin plasma-dataengines-addons plasma-desktop plasma-framework plasma-nm plasma-pa plasma-theme-oxygen plasma-widgets-addons plasma-workspace polkit-kde-agent-1 print-manager qt5-style-kvantum qt5-style-kvantum-l10n qt5-style-kvantum-themes sddm sddm-theme-breeze skanlite sudo svgpart sweeper udisks2 upower xdg-utils xorg xserver-xorg-input-all xserver-xorg-video-all xterm" > $WKDIR/subuntu/config/package-lists/mydesktop.list.chroot
+
+echo "apt-transport-https autoconf automake btrfs-progs build-essential cdrdao cdrskin cdtool cifs-utils clonezilla debconf debhelper dh-autoreconf dialog dirmngr dkms dos2unix dosfstools dvdauthor dvd+rw-tools exfatprogs faac faad fakeroot ffmpeg filezilla firefox-esr firmware-linux firmware-linux-nonfree firmware-misc-nonfree flac frei0r-plugins gimp gstreamer1.0-plugins-bad gstreamer1.0-plugins-good gstreamer1.0-plugins-ugly haveged htop hunspell-en-us hyphen-en-us iftop inxi isolinux jfsutils lame less libreoffice-calc libreoffice-draw libreoffice-impress libreoffice-writer libreoffice-kf5 libreoffice-help-en-us libreoffice-style-breeze libqt5opengl5 libxvidcore4 linux-headers-amd64 live-build lshw mencoder menu mjpegtools mpg321 mpv mtools nano neofetch ntfs-3g nvidia-detect openconnect openvpn openvpn-systemd-resolved p7zip-full p7zip-rar papirus-icon-theme pciutils rar simplescreenrecorder smplayer smplayer-l10n smplayer-themes sox squashfs-tools syslinux syslinux-common testdisk twolame unrar unzip wget x265 x264 xfsprogs xorriso zip zulucrypt-gui zulumount-gui" > $WKDIR/subuntu/config/package-lists/mypackages.list.chroot
+
+echo "firmware-atheros firmware-bnx2 firmware-bnx2x firmware-brcm80211 firmware-ipw2x00 firmware-intelwimax firmware-iwlwifi firmware-libertas firmware-netxen firmware-realtek firmware-zd1211" > $WKDIR/subuntu/config/package-lists/morefirmware.list.chroot
+
+echo "efibootmgr grub-common grub2-common grub-efi-amd64 grub-efi-amd64-bin grub-efi-amd64-signed grub-efi-ia32-bin grub-pc-bin libefiboot1 libefivar1 mokutil shim-helpers-amd64-signed shim-signed-common shim-unsigned" > $WKDIR/subuntu/config/package-lists/grubuefi.list.binary
+
+# Uncomment below line to include more Broadcom WiFi drivers:
+# echo "b43-fwcutter firmware-b43-installer firmware-b43legacy-installer" > $WKDIR/subuntu/config/package-lists/bcmfirmware.list.chroot
+
+# Make folders in the chroot
+
+mkdir -p $WKDIR/subuntu/config/includes.chroot/usr/share/subuntu
+mkdir -p $WKDIR/subuntu/config/includes.chroot/usr/share/backgrounds
+mkdir -p $WKDIR/subuntu/config/includes.chroot/usr/share/misc64
+mkdir -p $WKDIR/subuntu/config/includes.chroot/usr/local/bin
+mkdir -p $WKDIR/subuntu/config/includes.chroot/etc/skel/Desktop
+
+# Copy files into the chroot
+
+cp -r $WKDIR/subuntubuild $WKDIR/subuntu/config/includes.chroot/usr/share/subuntu/
+cp -r $WKDIR/subuntubuild/bootloaders $WKDIR/subuntu/config/
+cp -p $WKDIR/subuntubuild/scripts/* $WKDIR/subuntu/config/includes.chroot/usr/local/bin/
+cp $WKDIR/subuntubuild/backgrounds/* $WKDIR/subuntu/config/includes.chroot/usr/share/backgrounds/
+cp -p $WKDIR/subuntubuild/misc64/* $WKDIR/subuntu/config/includes.chroot/usr/share/misc64/
+ln -s /usr/share/misc64/Quran $WKDIR/subuntu/config/includes.chroot/etc/skel/Desktop
+
+# Start the build process
+
+lb build
