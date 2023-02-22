@@ -44,7 +44,7 @@ cp -r $WKDIR/subuntubuild/bootloaders $WKDIR/subuntu/config/
 cp -p $WKDIR/subuntubuild/scripts/* $WKDIR/subuntu/config/includes.chroot/usr/local/bin/
 cp $WKDIR/subuntubuild/backgrounds/* $WKDIR/subuntu/config/includes.chroot/usr/share/backgrounds/
 cp -p $WKDIR/subuntubuild/misc64/* $WKDIR/subuntu/config/includes.chroot/usr/share/misc64/
-ln -s /usr/share/misc64/Quran $WKDIR/subuntu/config/includes.chroot/etc/skel/Desktop
+ln -s /usr/share/misc64/Quran.img $WKDIR/subuntu/config/includes.chroot/etc/skel/Desktop
 
 # Start the build process
 
